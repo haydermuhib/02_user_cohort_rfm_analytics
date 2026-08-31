@@ -79,7 +79,4 @@ def calculate_rfm_profiles(df_tx):
             
     df_rfm['Segment'] = df_rfm.apply(map_rfm_segment, axis=1)
     
-    # Save to Parquet
-    df_rfm.to_parquet(CUSTOMERS_PARQUET_PATH, index=False, engine='pyarrow')
-    
     return df_rfm

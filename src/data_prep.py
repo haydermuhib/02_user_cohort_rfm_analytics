@@ -50,6 +50,14 @@ def run_data_pipeline():
     os.makedirs(PROCESSED_DIR, exist_ok=True)
     print(f"Saving {len(df):,} transactions to Parquet...")
     df.to_parquet(OUTPUT_PARQUET_PATH, index=False, engine='pyarrow')
+    
+    # Calculate and save global customer RFM profiles to Parquet
+    print("Calculating and saving global customer RFM profiles...")
+    from data_processing import calculate_rfm_profiles
+    df_cust = calculate_rfm_profiles(df)
+    cust_parquet_path = os.path.join(PROCESSED_DIR, "customers.parquet")
+    df_cust.to_parquet(cust_parquet_path, index=False, engine='pyarrow')
+    
     print("ETL complete.")
 
 if __name__ == "__main__":
