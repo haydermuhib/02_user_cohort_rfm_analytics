@@ -1,6 +1,7 @@
 # User Cohort & RFM Analytics Dashboard
 ## Technical portfolio presentation
 
+**Live Application:** https://02usercohortrfmanalytics.streamlit.app/
 **Duration:** 10 minutes review
 **Audience:** Technical Recruiters and Hiring Managers
 **Date:** 2026-08-31
@@ -26,6 +27,7 @@ This application calculates monthly user cohort retention rates and performs qua
 - The Cohort Retention Matrix computes monthly signup cohorts and visualizes their retention cycles using heatmaps and styled grids.
 - The RFM Marketing Segments partition customer value scores into quintiles and represent counts on interactive treemaps.
 - The Customer Profiler lookup drill-down pulls detailed transaction logs and segment metrics for specific customers.
+- The Exploratory Notebook walks through missing value imputation, return order filtering, and the underlying mathematical calculations.
 
 ---
 
@@ -71,6 +73,7 @@ The project uses a modular folder layout, executing data preparation pipelines s
                         ▼ (src/data_prep.py ETL)
           [data/processed/transactions.parquet] ──┐
           [data/processed/customers.parquet] ────┼──► (app.py Streamlit UI)
+                                                 └──► (notebooks/*.ipynb Walkthrough)
 ```
 
 <details>
@@ -79,6 +82,7 @@ The project uses a modular folder layout, executing data preparation pipelines s
 - `data/download_data.py` pulls the online retail transaction CSV logs from the remote databricks repository.
 - `src/data_prep.py` runs ETL cleaning, resolves returns, handles guest tags, caps anomalies, and exports Parquet tables.
 - `src/data_processing.py` calculates cohort pivots, computes customer RFM quantiles, and classifies segments.
+- `notebooks/01_cohort_retention_and_rfm_eda.ipynb` documents the data cleaning steps, cohort matrix generation, and customer segmentation math.
 - `app.py` renders the Glassmorphic layout UI and runs the Plotly visualizations.
 
 </details>
@@ -114,11 +118,13 @@ You need Python 3.10 or newer and the `uv` package manager installed.
 
 ### Execution scripts
 | Step | Command |
-|------|---------|
+| :--- | :--- |
 | Ingestion | `uv run python data/download_data.py` |
-| ETL Pipeline | `uv run python src/data_prep.py` |
-| Dashboard App | `uv run streamlit run app.py` |
+| Production ETL | `uv run python src/data_prep.py` |
+| Interactive Dashboard | `uv run streamlit run app.py` |
+| Exploratory Notebook | `notebooks/01_cohort_retention_and_rfm_eda.ipynb` |
 
 ### Processed Parquet paths
 - Transactions: `data/processed/transactions.parquet`
 - Customers: `data/processed/customers.parquet`
+
