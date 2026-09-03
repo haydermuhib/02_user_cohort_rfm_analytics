@@ -5,3 +5,5 @@ __pycache__/
 .DS_Store
 project_design_rules.md
 docs/superpowers/
+notebooks/
+
