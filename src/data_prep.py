@@ -6,7 +6,10 @@ import numpy as np
 # Paths
 SRC_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_DIR = os.path.dirname(SRC_DIR)
-sys.path.insert(0, SRC_DIR)
+if PROJECT_DIR not in sys.path:
+    sys.path.insert(0, PROJECT_DIR)
+if SRC_DIR not in sys.path:
+    sys.path.insert(0, SRC_DIR)
 RAW_CSV_PATH = os.path.join(PROJECT_DIR, "data", "raw", "online_retail.csv")
 PROCESSED_DIR = os.path.join(PROJECT_DIR, "data", "processed")
 OUTPUT_PARQUET_PATH = os.path.join(PROCESSED_DIR, "transactions.parquet")
@@ -38,15 +41,16 @@ def run_data_pipeline():
     q_limit = df[df['Quantity'] > 0]['Quantity'].quantile(0.999)
     p_limit = df[df['UnitPrice'] > 0]['UnitPrice'].quantile(0.999)
     
-    df['Quantity'] = np.clip(df['Quantity'], -q_limit, q_limit)
-    df['UnitPrice'] = np.clip(df['UnitPrice'], 0, p_limit)
+    df['Quantity'] = df['Quantity'].clip(lower=-q_limit, upper=q_limit)
+    df['UnitPrice'] = df['UnitPrice'].clip(lower=0.0, upper=p_limit)
     df['TotalSales'] = df['Quantity'] * df['UnitPrice']
     df['COGS'] = df['Quantity'] * (df['UnitPrice'] * 0.60)
     df['Profit'] = df['TotalSales'] - df['COGS']
     
     # Hemisphere Classification
     southern_countries = ["Australia", "New Zealand", "South Africa", "Brazil"]
-    df['Hemisphere'] = np.where(df['Country'].isin(southern_countries), 'Southern', 'Northern')
+    df['Hemisphere'] = 'Northern'
+    df.loc[df['Country'].isin(southern_countries), 'Hemisphere'] = 'Southern'
     
     # Save to Parquet
     os.makedirs(PROCESSED_DIR, exist_ok=True)
@@ -55,7 +59,7 @@ def run_data_pipeline():
     
     # Calculate and save global customer RFM profiles to Parquet
     print("Calculating and saving global customer RFM profiles...")
-    from data_processing import calculate_rfm_profiles
+    from src.data_processing import calculate_rfm_profiles
     df_cust = calculate_rfm_profiles(df)
     cust_parquet_path = os.path.join(PROCESSED_DIR, "customers.parquet")
     df_cust.to_parquet(cust_parquet_path, index=False, engine='pyarrow')
