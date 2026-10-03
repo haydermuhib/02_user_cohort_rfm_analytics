@@ -10,13 +10,7 @@ import matplotlib.ticker as ticker
 import seaborn as sns
 
 # Import core processing functions
-try:
-    from src.data_processing import calculate_cohort_retention, calculate_rfm_profiles
-except ImportError:
-    SRC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "src")
-    if SRC_DIR not in sys.path:
-        sys.path.insert(0, SRC_DIR)
-    from data_processing import calculate_cohort_retention, calculate_rfm_profiles
+from src.data_processing import calculate_cohort_retention, calculate_rfm_profiles
 
 # Page Config
 st.set_page_config(
@@ -63,10 +57,7 @@ def load_cached_data():
     cust_path = os.path.join(project_dir, "data", "processed", "customers.parquet")
     
     if not os.path.exists(tx_path):
-        try:
-            from src.data_prep import run_data_pipeline
-        except ImportError:
-            from data_prep import run_data_pipeline
+        from src.data_prep import run_data_pipeline
         run_data_pipeline()
         
     df_tx = pd.read_parquet(tx_path)
