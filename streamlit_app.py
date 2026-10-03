@@ -118,7 +118,7 @@ with tab1:
         
     st.markdown("### Monthly Sales Trend")
     df_valid_tx = df_tx_filtered[~df_tx_filtered['IsCancelled']].copy()
-    df_valid_tx['YearMonth'] = df_valid_tx['InvoiceDate'].dt.to_period('M').astype(str)
+    df_valid_tx['YearMonth'] = pd.to_datetime(df_valid_tx['InvoiceDate']).dt.strftime('%Y-%m')
     df_monthly = df_valid_tx.groupby('YearMonth')['TotalSales'].sum().reset_index()
     
     fig, ax = plt.subplots(figsize=(10, 4.2))
@@ -177,9 +177,10 @@ with tab2:
             
             # Colorbar tick styling
             cbar = ax_h.collections[0].colorbar
-            cbar.ax.yaxis.set_tick_params(color="#A0A5B5")
-            plt.setp(cbar.ax.yaxis.get_ticklabels(), color="#A0A5B5")
-            cbar.set_label("Retention Rate (%)", color="#A0A5B5", fontsize=10)
+            if cbar is not None:
+                cbar.ax.yaxis.set_tick_params(color="#A0A5B5")
+                plt.setp(cbar.ax.yaxis.get_ticklabels(), color="#A0A5B5")
+                cbar.set_label("Retention Rate (%)", color="#A0A5B5", fontsize=10)
             
             fig_h.tight_layout()
             st.pyplot(fig_h, width="stretch")
