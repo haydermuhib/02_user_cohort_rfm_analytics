@@ -89,8 +89,8 @@ selected_country = st.sidebar.selectbox("Select Country", ["All Countries"] + co
 # Apply filters
 if selected_country != "All Countries":
     df_tx_filtered = df_tx[df_tx['Country'] == selected_country].copy()
-    # Re-calculate customer metrics for active country selection
-    df_cust_filtered = calculate_rfm_profiles(df_tx_filtered)
+    country_cust_ids = df_tx_filtered[df_tx_filtered['CustomerID'] != 'Guest']['CustomerID'].unique()
+    df_cust_filtered = df_cust[df_cust['CustomerID'].isin(country_cust_ids)].copy()
 else:
     df_tx_filtered = df_tx.copy()
     df_cust_filtered = df_cust.copy()

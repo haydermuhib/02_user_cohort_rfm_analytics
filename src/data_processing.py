@@ -36,6 +36,9 @@ def calculate_cohort_retention(df_tx):
 def calculate_rfm_profiles(df_tx):
     # Filter out guests and cancellations
     df = df_tx[(df_tx['CustomerID'] != 'Guest') & (~df_tx['IsCancelled'])].copy()
+    if df.empty:
+        return pd.DataFrame(columns=['CustomerID', 'Recency', 'Frequency', 'Monetary',
+                                     'R_Score', 'F_Score', 'M_Score', 'RFM_Score', 'Segment'])
     
     max_date = df['InvoiceDate'].max()
     
@@ -46,17 +49,19 @@ def calculate_rfm_profiles(df_tx):
         Monetary=('TotalSales', 'sum')
     ).reset_index()
     
-    # RFM Scoring using quintiles
-    # Recency: lower is better (receives score 5)
-    r_labels = [5, 4, 3, 2, 1]
-    # Frequency and Monetary: higher is better (receives score 5)
-    f_labels = [1, 2, 3, 4, 5]
-    m_labels = [1, 2, 3, 4, 5]
+    n_cust = len(df_rfm)
     
-    # Check for rank duplication using rank method if data contains identical quantiles
-    df_rfm['R_Score'] = pd.qcut(df_rfm['Recency'], q=5, labels=r_labels, duplicates='drop').astype(int)
-    df_rfm['F_Score'] = pd.qcut(df_rfm['Frequency'].rank(method='first'), q=5, labels=f_labels).astype(int)
-    df_rfm['M_Score'] = pd.qcut(df_rfm['Monetary'], q=5, labels=m_labels).astype(int)
+    if n_cust < 5:
+        # Fallback scoring for small customer subsets where 5 quantiles cannot be formed
+        df_rfm['R_Score'] = 3
+        df_rfm['F_Score'] = 3
+        df_rfm['M_Score'] = 3
+    else:
+        # RFM Scoring using quintiles with rank method to guarantee distinct bin edges
+        # Recency: lower is better (receives score 5)
+        df_rfm['R_Score'] = pd.qcut(df_rfm['Recency'].rank(method='first', ascending=False), q=5, labels=[1, 2, 3, 4, 5]).astype(int)
+        df_rfm['F_Score'] = pd.qcut(df_rfm['Frequency'].rank(method='first'), q=5, labels=[1, 2, 3, 4, 5]).astype(int)
+        df_rfm['M_Score'] = pd.qcut(df_rfm['Monetary'].rank(method='first'), q=5, labels=[1, 2, 3, 4, 5]).astype(int)
     
     df_rfm['RFM_Score'] = df_rfm['R_Score'].astype(str) + df_rfm['F_Score'].astype(str) + df_rfm['M_Score'].astype(str)
     
