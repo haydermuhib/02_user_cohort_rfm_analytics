@@ -1,11 +1,33 @@
+# Virtual Environment & Package Managers
+.venv
 .venv/
-data/raw/
+venv/
+ENV/
+.pixi/
+
+# Python cache & compiled files
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Raw Data
+data/raw/
+
+# System & IDEs
 .DS_Store
-PROJECT_RULES.md
-project_design_rules.md
-Design.md
+.vscode/
+.idea/
+.gemini/
+.agents/
+.superpowers/
 docs/superpowers/
 
-
+# Design Blueprint and Rules (Permanently Git-Ignored per Project Rules)
+Design.md
+PROJECT_RULES.md
+project_design_rules.md
+project_plan.md

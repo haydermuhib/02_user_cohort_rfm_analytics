@@ -1,10 +1,12 @@
 import os
+import sys
 import pandas as pd
 import numpy as np
 
 # Paths
 SRC_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_DIR = os.path.dirname(SRC_DIR)
+sys.path.insert(0, SRC_DIR)
 RAW_CSV_PATH = os.path.join(PROJECT_DIR, "data", "raw", "online_retail.csv")
 PROCESSED_DIR = os.path.join(PROJECT_DIR, "data", "processed")
 OUTPUT_PARQUET_PATH = os.path.join(PROCESSED_DIR, "transactions.parquet")
