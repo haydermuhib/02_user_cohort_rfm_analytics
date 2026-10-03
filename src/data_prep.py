@@ -41,15 +41,15 @@ def run_data_pipeline():
     q_limit = df[df['Quantity'] > 0]['Quantity'].quantile(0.999)
     p_limit = df[df['UnitPrice'] > 0]['UnitPrice'].quantile(0.999)
     
-    df['Quantity'] = np.clip(df['Quantity'], -q_limit, q_limit)
-    df['UnitPrice'] = np.clip(df['UnitPrice'], 0, p_limit)
+    df['Quantity'] = df['Quantity'].clip(-q_limit, q_limit)
+    df['UnitPrice'] = df['UnitPrice'].clip(0, p_limit)
     df['TotalSales'] = df['Quantity'] * df['UnitPrice']
     df['COGS'] = df['Quantity'] * (df['UnitPrice'] * 0.60)
     df['Profit'] = df['TotalSales'] - df['COGS']
     
     # Hemisphere Classification
     southern_countries = ["Australia", "New Zealand", "South Africa", "Brazil"]
-    df['Hemisphere'] = np.where(df['Country'].isin(southern_countries), 'Southern', 'Northern')
+    df['Hemisphere'] = df['Country'].isin(southern_countries).map({True: 'Southern', False: 'Northern'})
     
     # Save to Parquet
     os.makedirs(PROCESSED_DIR, exist_ok=True)

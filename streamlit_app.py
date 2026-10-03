@@ -118,7 +118,7 @@ with tab1:
         
     st.markdown("### Monthly Sales Trend")
     df_valid_tx = df_tx_filtered[~df_tx_filtered['IsCancelled']].copy()
-    df_valid_tx['YearMonth'] = df_valid_tx['InvoiceDate'].dt.to_period('M').astype(str)
+    df_valid_tx['YearMonth'] = pd.to_datetime(df_valid_tx['InvoiceDate']).dt.to_period('M').astype(str)
     df_monthly = df_valid_tx.groupby('YearMonth')['TotalSales'].sum().reset_index()
     
     fig, ax = plt.subplots(figsize=(10, 4.2))
