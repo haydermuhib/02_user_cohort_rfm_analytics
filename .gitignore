@@ -25,6 +25,7 @@ data/raw/
 .agents/
 .superpowers/
 docs/superpowers/
+pyrightconfig.json
 
 # Design Blueprint and Rules (Permanently Git-Ignored per Project Rules)
 Design.md
